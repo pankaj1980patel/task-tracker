@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings</title>
+    <script type="module" src="/settings.js" defer></script>
+  </head>
+  <body>
+    <div class="settings-body">
+      <h1>Settings</h1>
+
+      <div class="field">
+        <label for="data-dir">Storage folder</label>
+        <div class="field-row">
+          <input id="data-dir" placeholder="/Users/you/Google Drive/TaskTracker" />
+          <button id="reveal" title="Open in Finder">Reveal</button>
+        </div>
+        <div class="help">
+          Daily/weekly task files (<code>YYYY-MM-DD.json</code>) are written here.
+          Point this at a Google Drive, iCloud, or Dropbox folder for automatic
+          backup and restore. Each day is a separate file, so syncing is fast and
+          conflicts are rare.
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="granularity">File granularity</label>
+        <select id="granularity">
+          <option value="daily">Daily — one file per day (recommended)</option>
+          <option value="weekly">Weekly — one file per ISO week</option>
+        </select>
+        <div class="help">
+          Daily files keep each day small and make cloud sync incremental. Weekly
+          files reduce file count if you prefer.
+        </div>
+      </div>
+
+      <div class="field">
+        <label>
+          <input type="checkbox" id="show-in-dock" style="width:auto;margin-right:6px" />
+          Show in Dock / taskbar
+        </label>
+        <div class="help">
+          When off, the app only shows in the menu bar / system tray. Restart the
+          app for this to take effect on macOS.
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button id="save" class="primary">Save</button>
+        <button id="cancel" class="ghost">Close</button>
+        <div class="spacer"></div>
+        <span id="status" class="help"></span>
+      </div>
+    </div>
+  </body>
+</html>

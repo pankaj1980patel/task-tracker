@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Add</title>
+    <script type="module" src="/applet.js" defer></script>
+    <style>
+      body { background: transparent; }
+    </style>
+  </head>
+  <body>
+    <div class="applet-body">
+      <div class="applet-head">
+        <h2>Today</h2>
+        <span id="applet-date" style="font-size:11px;color:var(--text-dim)"></span>
+        <div class="spacer"></div>
+        <button id="applet-open" class="ghost" title="Open full tracker">⤢</button>
+      </div>
+
+      <form class="applet-add" id="applet-form">
+        <div class="row">
+          <input
+            id="applet-title"
+            placeholder="Quick add… (Enter)"
+            autocomplete="off"
+            autofocus
+          />
+        </div>
+        <div class="row">
+          <select id="applet-priority">
+            <option value="low">Low</option>
+            <option value="normal" selected>Normal</option>
+            <option value="high">High</option>
+          </select>
+          <button type="submit" class="primary" style="flex:1">Add</button>
+        </div>
+      </form>
+
+      <div class="applet-list" id="applet-list"></div>
+
+      <div class="applet-foot">
+        <span id="applet-summary"></span>
+        <div style="flex:1"></div>
+        <button class="ghost" id="applet-settings" title="Settings">⚙</button>
+      </div>
+    </div>
+  </body>
+</html>

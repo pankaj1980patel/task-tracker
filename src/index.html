@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Tracker</title>
+    <script type="module" src="/main.js" defer></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <h1>Task Tracker</h1>
+        <div class="bucket-picker">
+          <button id="prev-bucket" class="ghost" title="Previous">&lsaquo;</button>
+          <select id="bucket-select"></select>
+          <button id="next-bucket" class="ghost" title="Next">&rsaquo;</button>
+          <button id="today-btn" class="ghost" title="Jump to today">Today</button>
+        </div>
+        <div class="spacer"></div>
+        <div class="summary" id="summary"></div>
+        <button id="reveal-btn" class="ghost" title="Reveal data folder">📁</button>
+        <button id="settings-btn" class="ghost" title="Settings">⚙</button>
+      </header>
+
+      <main>
+        <div class="tasks-pane">
+          <form class="add-row" id="add-form">
+            <input
+              id="add-title"
+              placeholder="Add a task… (press Enter)"
+              autocomplete="off"
+              autofocus
+            />
+            <select id="add-priority">
+              <option value="low">Low</option>
+              <option value="normal" selected>Normal</option>
+              <option value="high">High</option>
+            </select>
+            <button type="submit" class="primary">Add</button>
+          </form>
+
+          <div id="rollover-bar" style="display:none; margin-bottom:12px;">
+            <button id="rollover-btn" class="ghost">
+              ↻ Move unfinished tasks from this bucket to today
+            </button>
+          </div>
+
+          <div id="task-list"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
