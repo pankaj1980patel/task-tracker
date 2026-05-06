@@ -1,6 +1,6 @@
 use crate::settings::{self, Settings, SettingsState};
 use crate::storage::{self, Task};
-use chrono::{NaiveDate, Utc};
+use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, Manager, State};
@@ -113,6 +113,8 @@ pub fn add_task(
         created_at: Utc::now(),
         completed_at: None,
         bucket: bucket.clone(),
+        reminder_at: None,
+        reminder_fired: false,
     };
 
     if new_task.title.is_empty() {
@@ -251,6 +253,43 @@ pub fn open_main(app: AppHandle) -> Result<(), String> {
 #[tauri::command]
 pub fn close_window(window: tauri::Window) -> Result<(), String> {
     window.hide().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn set_reminder(
+    app: AppHandle,
+    state: State<'_, SettingsState>,
+    bucket: String,
+    id: String,
+    // due_at: RFC3339 datetime string, or null to clear.
+    due_at: Option<String>,
+) -> Result<Task, String> {
+    let dir = data_dir(&state);
+    let mut day = storage::load_bucket(&dir, &bucket).map_err(|e| e.to_string())?;
+    let task = day
+        .tasks
+        .iter_mut()
+        .find(|t| t.id == id)
+        .ok_or_else(|| "task not found".to_string())?;
+
+    match due_at {
+        Some(s) => {
+            let dt = DateTime::parse_from_rfc3339(&s)
+                .map_err(|e| format!("invalid datetime: {e}"))?
+                .with_timezone(&Utc);
+            task.reminder_at = Some(dt);
+            task.reminder_fired = false;
+        }
+        None => {
+            task.reminder_at = None;
+            task.reminder_fired = false;
+        }
+    }
+
+    let result = task.clone();
+    storage::save_bucket(&dir, &day).map_err(|e| e.to_string())?;
+    let _ = app.emit("tasks:changed", &bucket);
+    Ok(result)
 }
 
 #[tauri::command]

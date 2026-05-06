@@ -254,3 +254,141 @@ main { display: grid; grid-template-columns: 1fr; overflow: hidden; }
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.task .meta .rem {
+  background: rgba(226, 183, 107, 0.18);
+  color: var(--warn);
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.task .meta .rem.fired { opacity: 0.6; }
+
+button.icon {
+  padding: 4px 6px;
+  font-size: 13px;
+  line-height: 1;
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-dim);
+}
+button.icon:hover { color: var(--text); background: var(--bg-input); border-color: var(--border); }
+button.icon.has-reminder { color: var(--warn); }
+
+.reminder-menu {
+  position: fixed;
+  z-index: 1000;
+  width: 240px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.reminder-menu button {
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 7px 10px;
+  border-radius: 6px;
+  color: var(--text);
+}
+.reminder-menu button:hover {
+  background: var(--accent-soft);
+  border-color: transparent;
+}
+.reminder-menu button.danger { color: var(--danger); }
+.reminder-menu button.primary {
+  background: var(--accent);
+  color: white;
+  padding: 6px 10px;
+}
+.reminder-menu .rm-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 6px;
+}
+.reminder-menu .rm-label {
+  margin: 4px 10px 2px;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+.reminder-menu .rm-custom {
+  display: flex;
+  gap: 4px;
+  padding: 0 6px 4px;
+}
+.reminder-menu .rm-custom input {
+  flex: 1;
+  padding: 5px 6px;
+  font-size: 12px;
+}
+
+.applet-head .nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.applet-head .nav button {
+  padding: 2px 8px;
+  font-size: 14px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-dim);
+}
+.applet-head .nav button:hover {
+  color: var(--text);
+  background: var(--bg-input);
+}
+.applet-head .nav .label {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+  min-width: 80px;
+  text-align: center;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.applet-head .nav .label:hover { background: var(--bg-input); }
+.applet-head .nav .label .sub {
+  display: block;
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+.bucket-dropdown {
+  position: fixed;
+  z-index: 1000;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  min-width: 200px;
+}
+.bucket-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+}
+.bucket-dropdown button:hover { background: var(--accent-soft); }
+.bucket-dropdown button.active { background: var(--accent-soft); color: var(--accent); }

@@ -2,13 +2,18 @@ mod commands;
 mod settings;
 mod storage;
 
+use std::path::PathBuf;
 use std::sync::Mutex;
+use std::thread;
+use std::time::Duration;
 
+use chrono::Utc;
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager, PhysicalPosition, WindowEvent,
+    AppHandle, Emitter, Manager, PhysicalPosition, WindowEvent,
 };
+use tauri_plugin_notification::NotificationExt;
 
 use crate::settings::SettingsState;
 
@@ -16,10 +21,19 @@ use crate::settings::SettingsState;
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             let handle = app.handle().clone();
             let initial = settings::load(&handle);
             app.manage(SettingsState(Mutex::new(initial)));
+
+            let scan_handle = handle.clone();
+            thread::spawn(move || loop {
+                thread::sleep(Duration::from_secs(30));
+                if let Err(e) = scan_reminders(&scan_handle) {
+                    eprintln!("reminder scan error: {e}");
+                }
+            });
 
             let quick_add = MenuItem::with_id(app, "quick-add", "Quick Add", true, None::<&str>)?;
             let open_main = MenuItem::with_id(app, "open-main", "Open Tracker", true, None::<&str>)?;
@@ -116,6 +130,7 @@ pub fn run() {
             commands::update_task,
             commands::delete_task,
             commands::move_unfinished_to_today,
+            commands::set_reminder,
             commands::open_settings,
             commands::open_main,
             commands::close_window,
@@ -158,4 +173,52 @@ fn toggle_applet(app: &tauri::AppHandle, near: Option<PhysicalPosition<f64>>) {
 
     let _ = window.show();
     let _ = window.set_focus();
+}
+
+fn scan_reminders(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    let dir = {
+        let state = app.state::<SettingsState>();
+        let s = state.0.lock().unwrap();
+        PathBuf::from(&s.data_dir)
+    };
+    if !dir.exists() {
+        return Ok(());
+    }
+    let buckets = storage::list_buckets(&dir)?;
+    let now = Utc::now();
+    for bucket in buckets {
+        let mut day = storage::load_bucket(&dir, &bucket)?;
+        let mut changed = false;
+        let mut to_fire: Vec<(String, String)> = vec![];
+        for task in day.tasks.iter_mut() {
+            if task.done || task.reminder_fired {
+                continue;
+            }
+            if let Some(due) = task.reminder_at {
+                if due <= now {
+                    to_fire.push((task.title.clone(), task.priority.clone()));
+                    task.reminder_fired = true;
+                    changed = true;
+                }
+            }
+        }
+        if changed {
+            storage::save_bucket(&dir, &day)?;
+            let _ = app.emit("tasks:changed", &bucket);
+        }
+        for (title, priority) in to_fire {
+            let body = if priority == "high" {
+                format!("[High priority] {title}")
+            } else {
+                title
+            };
+            let _ = app
+                .notification()
+                .builder()
+                .title("Task reminder")
+                .body(body)
+                .show();
+        }
+    }
+    Ok(())
 }

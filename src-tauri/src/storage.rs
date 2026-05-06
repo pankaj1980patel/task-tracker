@@ -20,6 +20,10 @@ pub struct Task {
     pub completed_at: Option<DateTime<Utc>>,
     /// The date this task is filed under: YYYY-MM-DD (or YYYY-Www for weekly).
     pub bucket: String,
+    #[serde(default)]
+    pub reminder_at: Option<DateTime<Utc>>,
+    #[serde(default)]
+    pub reminder_fired: bool,
 }
 
 fn default_priority() -> String {

@@ -13,9 +13,16 @@
   <body>
     <div class="applet-body">
       <div class="applet-head">
-        <h2>Today</h2>
-        <span id="applet-date" style="font-size:11px;color:var(--text-dim)"></span>
+        <div class="nav">
+          <button id="applet-prev" title="Previous day">‹</button>
+          <span id="applet-label" class="label" title="Jump to date">
+            <span class="main">Today</span>
+            <span class="sub" id="applet-sub"></span>
+          </span>
+          <button id="applet-next" title="Next day">›</button>
+        </div>
         <div class="spacer"></div>
+        <button id="applet-today" class="ghost" title="Jump to today">⌖</button>
         <button id="applet-open" class="ghost" title="Open full tracker">⤢</button>
       </div>
 

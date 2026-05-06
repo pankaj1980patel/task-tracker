@@ -24,6 +24,8 @@ export const api = {
   deleteTask: (bucket, id) => call("delete_task", { bucket, id }),
   moveUnfinishedToToday: (fromBucket) =>
     call("move_unfinished_to_today", { fromBucket }),
+  setReminder: (bucket, id, dueAt) =>
+    call("set_reminder", { bucket, id, dueAt: dueAt ?? null }),
   openSettings: () => call("open_settings"),
   openMain: () => call("open_main"),
   closeWindow: () => call("close_window"),

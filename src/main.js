@@ -1,4 +1,5 @@
 import { api, on, fmtBucket, escapeHtml, toast } from "./lib/api.js";
+import { fmtReminder, openReminderMenu } from "./lib/reminders.js";
 
 const els = {};
 let state = {
@@ -99,6 +100,11 @@ function renderTaskHTML(t) {
     hour: "2-digit",
     minute: "2-digit",
   });
+  const rem = t.reminder_at
+    ? `<span class="rem ${t.reminder_fired ? "fired" : ""}" title="${
+        t.reminder_fired ? "Reminder fired" : "Reminder pending"
+      }">🔔 ${escapeHtml(fmtReminder(t.reminder_at))}</span>`
+    : "";
   return `
     <div class="task ${t.done ? "done" : ""}" data-id="${escapeHtml(t.id)}">
       <span class="check" data-action="toggle"></span>
@@ -109,11 +115,13 @@ function renderTaskHTML(t) {
         <div class="meta">
           <span class="pri ${escapeHtml(t.priority)}">${escapeHtml(t.priority)}</span>
           <span>${time}</span>
+          ${rem}
           ${tags}
         </div>
       </div>
       <div class="actions">
-        <button class="ghost" data-action="delete" title="Delete">✕</button>
+        <button class="icon ${t.reminder_at ? "has-reminder" : ""}" data-action="remind" title="Reminder">🔔</button>
+        <button class="icon" data-action="delete" title="Delete">✕</button>
       </div>
     </div>`;
 }
@@ -157,7 +165,8 @@ async function onListClick(e) {
   const taskEl = e.target.closest(".task");
   if (!taskEl) return;
   const id = taskEl.dataset.id;
-  const action = e.target.dataset.action;
+  const action =
+    e.target.dataset.action || e.target.closest("[data-action]")?.dataset.action;
   const task = state.tasks.find((t) => t.id === id);
   if (!task) return;
 
@@ -172,6 +181,9 @@ async function onListClick(e) {
     if (next != null && next.trim() && next !== task.title) {
       await api.updateTask({ bucket: state.bucket, id, title: next.trim() });
     }
+  } else if (action === "remind") {
+    const anchor = e.target.closest("[data-action=remind]");
+    openReminderMenu(anchor, task, state.bucket);
   }
 }
 
